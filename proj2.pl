@@ -20,18 +20,19 @@ puzzle_solution(Puzzle) :-
     same_diagonals(InnerPuzzleRows),
 
     % all values within each row are unique
-    maplist(all_distinct, InnerPuzzleRows),
+    % maplist(all_distinct, InnerPuzzleRows),
 
     % all values within each column are unique
-    transpose(InnerPuzzleRows, InnerPuzzleCols), maplist(all_distinct, InnerPuzzleCols),
+    % maplist(all_distinct, InnerPuzzleCols),
     
     % all values in the puzzle between 1 & 9
-    append(InnerPuzzleRows, Vs), maplist(between(1,9), Vs),
+    % append(InnerPuzzleRows, Vs), maplist(between(1,9), Vs),
 
     % check for row headers to be sum or product
     maplist(sum_or_prod, InnerPuzzleRows, RowHead),
 
     % check for col headers to be sum or product
+    transpose(InnerPuzzleRows, InnerPuzzleCols),
     maplist(sum_or_prod, InnerPuzzleCols, ColHead).
     
 % --------HELPER FUNCTIONS-------------
@@ -52,10 +53,22 @@ same_diagonals([H|T]) :-
 
 % Check if list elements sum or multipy to a value
 sum_or_prod(L, Val) :-
+    all_distinct(L),
+    maplist(between(1,9), L),
+    length(L, N),
+    NSum is N*9,
+    ( Val < NSum ->
+        sum_and_prod(L, Val)
+    ;
+        prod_list(L, Val)
+    ).
+
+sum_and_prod(L, Val) :-
     sum_list(L, Val);
     prod_list(L, Val).
 
+
 % Find product of list elements
-product(A, B, Y) :- Y is A*B.
+product(A, B, Y) :- Y #= A*B.
 prod_list([], 1).
 prod_list([L|Ls], P) :- foldl(product, Ls, L, P).
