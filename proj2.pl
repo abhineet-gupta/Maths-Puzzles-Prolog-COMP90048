@@ -6,13 +6,10 @@
 %  Description: 
 %   
 
-use_module(library(clpr)).
-use_module(library(clpfd)).
+:- use_module(library(clpr)).
+:- use_module(library(clpfd)).
 
-puzzle_solution(Puzzle) :-    
-
-    ensure_loaded(library(clpfd)), ensure_loaded(library(clpr)),
-
+puzzle_solution(Puzzle) :-
     % # of rows = # of columns
     maplist(same_length(Puzzle), Puzzle),
 
@@ -25,18 +22,17 @@ puzzle_solution(Puzzle) :-
     % all values within each row are unique
     maplist(all_distinct, InnerPuzzleRows),
 
-    % all values in the puzzle between 1 & 9
-    append(InnerPuzzleRows, Vs), maplist(between(1,9), Vs),
-
     % all values within each column are unique
     transpose(InnerPuzzleRows, InnerPuzzleCols), maplist(all_distinct, InnerPuzzleCols),
     
+    % all values in the puzzle between 1 & 9
+    append(InnerPuzzleRows, Vs), maplist(between(1,9), Vs),
+
     % check for row headers to be sum or product
     maplist(sum_or_prod, InnerPuzzleRows, RowHead),
 
     % check for col headers to be sum or product
     maplist(sum_or_prod, InnerPuzzleCols, ColHead).
-
     
 % --------HELPER FUNCTIONS-------------
 % Removes row and column headers to leave the inner puzzle
